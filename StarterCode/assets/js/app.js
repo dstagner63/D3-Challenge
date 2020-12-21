@@ -13,7 +13,7 @@ var width = svgWidth - margin.left - margin.right;
 var height = svgHeight - margin.top - margin.bottom;
 
 // Create an SVG wrapper, append an SVG group that will hold our chart, and shift the latter by left and top margins.
-var svg = d3.select("scatter")
+var svg = d3.select("#scatter")
   .append("svg")
   .attr("width", svgWidth)
   .attr("height", svgHeight);
@@ -38,11 +38,11 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
 
     // Step 2: Create scale functions
     var xLinearScale = d3.scaleLinear()
-      .domain([20, d3.max(healthData, d => d.healthcare)])
+      .domain([d3.min(healthData, d => d.healthcare)-1, d3.max(healthData, d => d.healthcare)])
       .range([0, width]);
 
     var yLinearScale = d3.scaleLinear()
-      .domain([0, d3.max(healthData, d => d.poverty)])
+      .domain([d3.min(healthData, d => d.poverty)-1, d3.max(healthData, d => d.poverty)])
       .range([height, 0]);
 
     // Step 3: Create axis functions
@@ -58,15 +58,29 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
       .call(leftAxis);
 
     // Step 5: Create Circles
-    var circlesGroup = chartGroup.selectAll("circle")
+    var dataGroup = chartGroup.selectAll("g")
     .data(healthData)
     .enter()
-    .append("circle")
-    .attr("cx", d => xLinearScale(d.healthcare))
-    .attr("cy", d => yLinearScale(d.poverty))
+    .append("g")
+    .attr("transform", function(d){
+      return "translate(" + xLinearScale(d.healthcare) + "," + yLinearScale(d.poverty) + ")";
+    });
+
+    var circlesGroup = dataGroup.append("circle")
     .attr("r", "15")
     .attr("fill", "pink")
     .attr("opacity", ".5");
+
+    var textGroup = dataGroup
+      .append("text")
+      .text(function(d){
+        console.log(d);
+        return d.abbr;
+      })
+      .attr("dx", -10)
+      .attr("dy", 7)
+    
+      console.log(d3.selectAll("text"))
 
     // Step 6: Initialize tool tip
     var toolTip = d3.tip()
@@ -79,8 +93,18 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
     // Step 7: Create tooltip in the chart
     chartGroup.call(toolTip);
 
+    textGroup.on("mouseenter", function(data) {
+      toolTip.show(data, this);
+    })
+      // onmouseout event
+      .on("mouseout", function(data, index) {
+        toolTip.hide(data);
+      });
+
+   
+
     // Step 8: Create event listeners to display and hide the tooltip
-    circlesGroup.on("click", function(data) {
+    circlesGroup.on("mouseenter", function(data) {
         toolTip.show(data, this);
       })
         // onmouseout event
@@ -95,7 +119,10 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
         .attr("x", 0 - (height / 2))
         .attr("dy", "1em")
         .attr("class", "axisText")
-        .text("Poverty");
+        .text("Poverty")
+        .on("click", function(d){
+          console.log("hello")
+        })
   
       chartGroup.append("text")
         .attr("transform", `translate(${width / 2}, ${height + margin.top + 30})`)
