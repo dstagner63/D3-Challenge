@@ -119,7 +119,7 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
         .attr("x", 0 - (height / 2))
         .attr("dy", "1em")
         .attr("class", "axisText")
-        .text("Poverty (%)")
+        .text("In Poverty (%)")
         .on("click", function(d){
           console.log("hello")
         })
