@@ -18,12 +18,12 @@ Add more general information about project. What the purpose of the project is? 
 ![Example screenshot](./img/screenshot.png)
 
 ## Technologies
-* JavaScript - version 1.0
-* HTML- version 2.0
-* D3 - version 3.0
+* JavaScript 
+* HTML
+* D3 
 
 ## Setup
-Describe how to install / setup your local environement / add link to demo version.
+To run the visualization, use 'python -m http.server'. This will host the 'localhost:8000' in your web browser.
 
 ## Code Examples
 Show examples of usage:
@@ -31,19 +31,18 @@ Show examples of usage:
 
 ## Features
 List of features ready and TODOs for future development
-* Awesome feature 1
-* Awesome feature 2
-* Awesome feature 3
+* Cool scatter plot that shows the relationship between two variables.
+* Ability to select from 3 variables on both the x and y axis.
+* Transition feature as different x and/or y variables are selected.
 
 To-do list:
-* Wow improvement to be done 1
-* Wow improvement to be done 2
+* It could be prettyfied a bit more.
 
 ## Status
 Project is: _in progress_, _finished_, _no longer continue_ and why?
 
 ## Inspiration
-Add here credits. Project inspired by..., based on...
+Working for an A.
 
 ## Contact
-Created by [@flynerdpl](https://www.flynerd.pl/) - feel free to contact me!
+Created by David Stagner dstagner63@icloud.com
