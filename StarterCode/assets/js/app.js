@@ -52,6 +52,7 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
     // Step 4: Append Axes to the chart
     chartGroup.append("g")
       .attr("transform", `translate(0, ${height})`)
+      .attr("id", "xaxis")
       .call(bottomAxis);
 
     chartGroup.append("g")
@@ -112,8 +113,22 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
           toolTip.hide(data);
         });
   
+      
+      var ageActive = 0 
+      var incomeActive = 1
+      var healthActive = 1
+      var obesityActive = 0
       const updateXaxis = (attribute, offset) => {
-        
+      xLinearScale = d3.scaleLinear()
+      .domain([d3.min(healthData, d => d[attribute])-offset, d3.max(healthData, d => d[attribute])+offset])
+      .range([0, width]);
+      bottomAxis = d3.axisBottom(xLinearScale);
+      d3.select("#xaxis").call(bottomAxis);
+      if (healthActive===1) {
+        dataGroup.attr("transform", function(d){
+          return "translate(" + xLinearScale(d[attribute]) + "," + yLinearScale(d.healthcare) + ")";
+        });
+      }
       }
 
       // Create axes labels
