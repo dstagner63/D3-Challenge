@@ -112,14 +112,31 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
           toolTip.hide(data);
         });
   
+      const updateXaxis = (attribute, offset) => {
+        
+      }
+
       // Create axes labels
       chartGroup.append("text")
         .attr("transform", "rotate(-90)")
-        .attr("y", 0 - margin.left + 40)
+        .attr("y", 0 - margin.left)
         .attr("x", 0 - (height / 2))
         .attr("dy", "1em")
         .attr("class", "axisText")
+        .attr("stroke", "black")
         .text("In Poverty (%)")
+        .on("click", function(d){
+          console.log("hello")
+        })
+
+        chartGroup.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - margin.left + 30)
+        .attr("x", 0 - (height / 2))
+        .attr("dy", "1em")
+        .attr("class", "axisText")
+        .attr("stroke", "black")
+        .text("Obesity (%)")
         .on("click", function(d){
           console.log("hello")
         })
@@ -127,6 +144,7 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
       chartGroup.append("text")
         .attr("transform", `translate(${width / 2}, ${height + margin.top + 30})`)
         .attr("class", "axisText")
+        .attr("stroke", "black")
         .text("Lacks Healthcare (%)");
     }).catch(function(error) {
       console.log(error);
