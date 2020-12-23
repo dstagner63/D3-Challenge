@@ -5,8 +5,8 @@ var svgHeight = 500;
 var margin = {
   top: 20,
   right: 40,
-  bottom: 100,
-  left: 100
+  bottom: 130,
+  left: 130
 };
 
 var width = svgWidth - margin.left - margin.right;
@@ -38,7 +38,7 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
 
     // Step 2: Create scale functions
     var xLinearScale = d3.scaleLinear()
-      .domain([d3.min(healthData, d => d.income)-1, d3.max(healthData, d => d.income)+1])
+      .domain([d3.min(healthData, d => d.income)-1000, d3.max(healthData, d => d.income)+1000])
       .range([0, width]);
 
     var yLinearScale = d3.scaleLinear()
@@ -119,7 +119,10 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
       var incomeActive = 1
       var healthActive = 1
       var obesityActive = 0
+      var smokesActive = 0
+      var povertyActive = 0
       const updateXaxis = (attribute, offset) => {
+      var label = attribute.charAt(0).toUpperCase() + attribute.slice(1);
       xLinearScale = d3.scaleLinear()
       .domain([d3.min(healthData, d => d[attribute])-offset, d3.max(healthData, d => d[attribute])+offset])
       .range([0, width]);
@@ -143,7 +146,7 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
           .attr("r", "15")
         })
         toolTip.html(function(d) {
-          return (`${d.state}<br>Healthcare: ${d.healthcare}<br>${attribute}: ${d[attribute]}`);
+          return (`${d.state}<br>Healthcare: ${d.healthcare}<br>${label}: ${d[attribute]}`);
         });
       } else if (obesityActive===1){
         dataGroup
@@ -163,14 +166,35 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
           .attr("r", "15")
         });
         toolTip.html(function(d) {
-              return (`${d.state}<br>Obesity: ${d.obesity}<br>${attribute}: ${d[attribute]}`);
+              return (`${d.state}<br>Obesity: ${d.obesity}<br>${label}: ${d[attribute]}`);
         });
-      }
+      } else if (smokesActive===1){
+        dataGroup
+        .transition()
+        .duration(1000)
+        .on("start", function(){
+          circlesGroup.attr("fill", "black")
+          .attr("r", "5")
+        })
+        .attr("transform", function(d){
+          return "translate(" + xLinearScale(d[attribute]) + "," + yLinearScale(d.smokes) + ")";
+        })
+        .transition()
+        .duration(1000)
+        .on("start", function(){
+          circlesGroup.attr("fill", "pink")
+          .attr("r", "15")
+        });
+        toolTip.html(function(d) {
+              return (`${d.state}<br>Smokes: ${d.smokes}<br>${label}: ${d[attribute]}`);
+        });
+      } 
       chartGroup.call(toolTip);
       }
 
       const updateYaxis = (attribute, offset) => {
-      var yLinearScale = d3.scaleLinear()
+      var label = attribute.charAt(0).toUpperCase() + attribute.slice(1);
+      yLinearScale = d3.scaleLinear()
       .domain([d3.min(healthData, d => d[attribute])-offset, d3.max(healthData, d => d[attribute])+ offset])
       .range([height, 0]);
       leftAxis = d3.axisLeft(yLinearScale);
@@ -193,7 +217,7 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
           .attr("r", "15")
         })
         toolTip.html(function(d) {
-          return (`${d.state}<br>Age: ${d.age}<br>${attribute}: ${d[attribute]}`);
+          return (`${d.state}<br>Age: ${d.age}<br>${label}: ${d[attribute]}`);
         });
       } else if (incomeActive===1){
         dataGroup
@@ -213,7 +237,27 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
           .attr("r", "15")
         })
         toolTip.html(function(d) {
-              return (`${d.state}<br>Income: ${d.income}<br>${attribute}: ${d[attribute]}`);
+              return (`${d.state}<br>Income: ${d.income}<br>${label}: ${d[attribute]}`);
+        });
+      } else if (povertyActive===1){
+        dataGroup
+        .transition()
+        .duration(1000)
+        .on("start", function(){
+          circlesGroup.attr("fill", "black")
+          .attr("r", "5")
+        })
+        .attr("transform", function(d){
+          return "translate(" + xLinearScale(d.poverty) + "," + yLinearScale(d[attribute]) + ")";
+        })
+        .transition()
+        .duration(1000)
+        .on("start", function(){
+          circlesGroup.attr("fill", "pink")
+          .attr("r", "15")
+        })
+        toolTip.html(function(d) {
+              return (`${d.state}<br>Poverty: ${d.poverty}<br>${label}: ${d[attribute]}`);
         });
       }
       chartGroup.call(toolTip);
@@ -231,6 +275,7 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
         .on("click", function(d){
           healthActive = 1;
           obesityActive = 0;
+          smokesActive = 0;
           updateYaxis("healthcare", 1)
         })
 
@@ -245,9 +290,25 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
         .on("click", function(d){
           obesityActive = 1;
           healthActive = 0;
+          smokesActive = 0;
           updateYaxis("obesity", 1)
         })
   
+        chartGroup.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - margin.left + 60)
+        .attr("x", 0 - (height / 2))
+        .attr("dy", "1em")
+        .attr("class", "axisText")
+        .attr("stroke", "black")
+        .text("Smokes (%)")
+        .on("click", function(d){
+          obesityActive = 0;
+          healthActive = 0;
+          smokesActive = 1;
+          updateYaxis("smokes", 1)
+        })
+
       chartGroup.append("text")
         .attr("transform", `translate(${width / 2}, ${height + margin.top + 30})`)
         .attr("class", "axisText")
@@ -256,6 +317,7 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
         .on("click", function(){
           ageActive = 1;
           incomeActive = 0;
+          povertyActive = 0;
           updateXaxis("age", 1)
         })
 
@@ -267,7 +329,20 @@ d3.csv("assets/data/data.csv").then(function(healthData) {
         .on("click", function(){
           ageActive = 0;
           incomeActive = 1; 
+          povertyActive = 0;
           updateXaxis("income", 1000)
+        })
+
+        chartGroup.append("text")
+        .attr("transform", `translate(${width / 2}, ${height + margin.top + 90})`)
+        .attr("class", "axisText")
+        .attr("stroke", "black")
+        .text("Poverty (%)")
+        .on("click", function(){
+          ageActive = 0;
+          incomeActive = 0; 
+          povertyActive = 1;
+          updateXaxis("poverty", 1)
         })
 
     }).catch(function(error) {
