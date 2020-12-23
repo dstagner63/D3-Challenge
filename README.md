@@ -27,7 +27,7 @@ To run the visualization, use 'python -m http.server'. This will host the 'local
 
 ## Code Examples
 Show examples of usage:
-`put-your-code-here`
+`no code examples included`
 
 ## Features
 List of features ready and TODOs for future development
